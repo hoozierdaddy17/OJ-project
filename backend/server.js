@@ -6,7 +6,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 // Load env variables from .env file
-require("dotenv").config();
+dotenv.config();
 
 // Create express app
 const app = express();
@@ -17,16 +17,18 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Connect to MongoDB database
-const dbConnection = require("./config/database");
+const dbConnection = require("./database/db");
 dbConnection();
 
 // Define routes
 const authRoute = require("./routes/authRoutes");
-// const userRoute = require("./routes/userRoutes");
+const userRoute = require("./routes/userRoutes");
+const problemRoute = require("./routes/authRoutes");
 
 // Routes
 app.use("/auth", authRoute);
-// app.use("/user", userRoute);
+app.use("/user", userRoute);
+ app.use("/problem", problemRoute);
 
 // Start/activate the server
 const PORT = process.env.PORT || 7000;
