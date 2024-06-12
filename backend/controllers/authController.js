@@ -9,7 +9,6 @@ require("dotenv").config();
 const authController = {
   // signup route handler
   signup: async (req, res) => {
-    console.log("success");
     try {
       //Validate inputs
       const { firstname, lastname, username, email, password, isAdmin } =
