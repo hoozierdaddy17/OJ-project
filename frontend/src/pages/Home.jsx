@@ -3,7 +3,7 @@ import { FiCode, FiSearch, FiAward } from "react-icons/fi";
 import ProgrammerBG from "../images/ProgrammerBG.png";
 
 const Home = () => {
-  const [words] = useState(["C++", "Python", "Java", "C"]);
+  const [words] = useState(["C++", "Python", "C", "Java"]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {

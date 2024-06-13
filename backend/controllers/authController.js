@@ -10,7 +10,7 @@ const authController = {
   // signup route handler
   signup: async (req, res) => {
     try {
-      //Validate inputs
+      // Validate inputs
       const { firstname, lastname, username, email, password, isAdmin } =
         req.body;
 
@@ -21,57 +21,60 @@ const authController = {
           .status(400)
           .json({ success: false, msg: "Invalid email format" });
       }
-     
-      if (
-        !(firstname && lastname && username && email && password && isAdmin)
-      ) {
-        return res.status(400).json({
-          success: false,
-          msg: "All fields are required",
-        });
-      }
-      // check if user already exists
 
+      if (
+        !(
+          firstname &&
+          lastname &&
+          username &&
+          email &&
+          password &&
+          isAdmin !== undefined
+        )
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, msg: "All fields are required" });
+      }
+
+      // Check if user already exists
       const existingUser = await User.findOne({
         $or: [{ email }, { username }],
       });
       if (existingUser) {
         if (existingUser.email === email) {
-          return res.status(400).json({
-            success: false,
-            msg: "Email is already registered",
-          });
+          return res
+            .status(400)
+            .json({ success: false, msg: "Email is already registered" });
         } else if (existingUser.username === username) {
-          return res.status(400).json({
-            success: false,
-            msg: "Username is already taken",
-          });
+          return res
+            .status(400)
+            .json({ success: false, msg: "Username is already taken" });
         }
       }
 
-      // hash the password
+      // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // create new user in DB
+      // Create new user in DB
       const newUser = await User.create({
         firstname,
         lastname,
         username,
         email,
         password: hashedPassword,
-        isAdmin: isAdmin == "T" ? true : false,
+        isAdmin: isAdmin == true ? true : false,
       });
 
-      // generate JWT token and save in cookies
-      // userId comes from DB
+      // Generate JWT token and save in cookies
       const token = jwt.sign(
-        { id: newUser._id, email },
+        { id: newUser._id, email: newUser.email },
         process.env.SECRET_KEY,
         {
           expiresIn: "24h",
         }
       );
-      // tokens are stored on client side in cookies or local storage
+      // Tokens are stored on client side in cookies or local storage
       newUser.token = token;
       newUser.password = undefined;
 
@@ -83,55 +86,51 @@ const authController = {
   },
 
   // login route handler
-
   login: async (req, res) => {
     try {
-      // check for valid inputs
-      const { username, email, password } = req.body;
-      if (!(email && password && username)) {
-        return res.status(400).send("All fields are required");
+      const { email, password } = req.body;
+
+      // Validate inputs
+      if (!email || !password) {
+        return res
+          .status(400)
+          .json({ success: false, msg: "Email and password are required" });
       }
 
-      // check if user exists in db(find user by email)
+      // Validate email format using regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res
+          .status(400)
+          .json({ success: false, msg: "Invalid email format" });
+      }
+
+      // Check if user exists in DB
       const user = await User.findOne({ email });
-      if (!user)
-        return res.status(400).send("Incorrect credentials, User not found");
+      if (!user) {
+        return res
+          .status(400)
+          .json({ success: false, msg: "Incorrect email or password" });
+      }
 
-      //   check if username matches
-      if (username !== user.username)
-        res.status(400).send("Username doesn't match");
-
-      // check if password matches
+      // Check if password matches
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(400).send("Incorrect password");
+        return res
+          .status(400)
+          .json({ success: false, msg: "Incorrect email or password" });
       }
 
-      // generate JWT token and save in cookies
-      const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
-        expiresIn: "24h",
-      });
-      // sent to frontend
-      user.token = token;
-      // no need to send password to frontend
-      user.password = undefined;
-      // this does not get stored in DB only gets updated in user object created above
-      //only affects the data sent to the client in the HTTP response
+      // Generate JWT token and send in response
+      const token = jwt.sign(
+        { id: user._id, email: user.email },
+        process.env.SECRET_KEY,
+        {
+          expiresIn: "24h",
+        }
+      );
 
-      // store token in cookies with options
-
-      const options = {
-        // in miliseconds
-        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-        httpOnly: true, //only manipulate by server not by client
-      };
-
-      // send the token
-      res.status(200).cookie("token", token, options).json({
-        message: "Logged in successfully",
-        success: true, //checks
-        token,
-      });
+      res.status(200).json({ token });
     } catch (error) {
       console.error("Login error:", error);
       res.status(500).send("Server Error");
@@ -139,7 +138,6 @@ const authController = {
   },
 
   // logout route handler
-
   logout: async (req, res) => {
     try {
       res.clearCookie("token");

@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema({
   },
   isAdmin: {
     type: Boolean,
-    default: false,
-  }
+    default: true,
+  },
 });
 
 // name of the model

@@ -19,7 +19,7 @@ const Signup = () => {
         username,
         email,
         password,
-        isAdmin: false, // assuming non-admin by default
+        isAdmin: true,
       });
 
       if (response.status === 201) {

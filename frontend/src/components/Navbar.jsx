@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import { BsSearch } from "react-icons/bs";
+import PropTypes from "prop-types";
 
-const Navbar = () => {
-  const user = false; // Dummy user
+const Navbar = ({ isLoggedIn, onLogout }) => {
   const location = useLocation();
+  console.log("Navbar - isLoggedIn:", isLoggedIn);
 
   // Determine if we are on the login or signup page
   const hideSearchBar =
@@ -26,7 +27,7 @@ const Navbar = () => {
               <BsSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
             </div>
           )}
-          {user ? (
+          {isLoggedIn ? (
             <>
               <Link
                 to="/problems"
@@ -40,13 +41,18 @@ const Navbar = () => {
               >
                 Create
               </Link>
-
               <Link
                 to="/profile"
                 className="text-lg hover:text-cyan-300 transition duration-300"
               >
                 Profile
               </Link>
+              <button
+                onClick={onLogout}
+                className="text-lg hover:text-cyan-300 transition duration-300"
+              >
+                Logout
+              </button>
             </>
           ) : (
             <>
@@ -68,6 +74,11 @@ const Navbar = () => {
       </div>
     </nav>
   );
+};
+
+Navbar.propTypes = {
+  isLoggedIn: PropTypes.bool.isRequired,
+  onLogout: PropTypes.func.isRequired,
 };
 
 export default Navbar;
