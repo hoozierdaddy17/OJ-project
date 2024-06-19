@@ -3,9 +3,9 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 
 // Get user profile
-router.get("/profile", userController.getProfile);
+router.get("/", userController.getProfile);
 
 // Update user profile
-router.get("/profile", userController.updateProfile);
+router.put("/", userController.updateProfile);
 
 module.exports = router;

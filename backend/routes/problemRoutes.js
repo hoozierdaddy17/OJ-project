@@ -3,18 +3,24 @@ const router = express.Router();
 const problemController = require("../controllers/problemController");
 
 // get all problems
-router.get("/problems", problemController.getProblems);
+router.get("/", problemController.getProblems);
 
 // get single problem by ID
-router.get("/problems/:id", problemController.getProblemByID);
+router.get("/:id", problemController.getProblemByID);
 
 // create new problem
-router.post("/problems", problemController.createProblem);
+router.post("/create", problemController.createProblem);
+
+// // run code for problem by ID
+// router.post("/problems/:id/run", problemController.runProblem);
+
+// // submit code for problem by ID
+// router.post("/problems/:id/submit", problemController.submitProblem);
 
 // update problem by ID
-router.put("/problems/:id", problemController.updateProblem);
+router.put("/:id", problemController.updateProblem);
 
 // delete problem by ID
-router.delete("/problems/:id", problemController.deleteProblem);
+router.delete("/:id", problemController.deleteProblem);
 
 module.exports = router;

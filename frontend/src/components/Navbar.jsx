@@ -36,12 +36,6 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
                 Problems
               </Link>
               <Link
-                to="/create"
-                className="text-lg hover:text-cyan-300 transition duration-300"
-              >
-                Create
-              </Link>
-              <Link
                 to="/profile"
                 className="text-lg hover:text-cyan-300 transition duration-300"
               >

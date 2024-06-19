@@ -1,7 +1,7 @@
 import ProblemItem from "./ProblemItem";
 
 const ProblemList = () => {
-  // problem data:
+  // Problem data
   const problems = [
     {
       id: 1,
