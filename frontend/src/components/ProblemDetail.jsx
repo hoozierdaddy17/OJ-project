@@ -1,82 +1,97 @@
-import React from "react";
+// ProblemDetail.jsx
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import axios from "axios";
 
-const ProblemDescription = () => {
-  // Manual problem description (replace with actual fetched data)
-  const problem = {
-    id: 1,
-    title: "Two Sum",
-    description:
-      "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
-    inputFormat:
-      "The input is an array of integers nums and an integer target.",
-    outputFormat:
-      "Return an array containing indices of the two numbers such that they add up to target.",
-    constraints:
-      "You may assume that each input would have exactly one solution, and you may not use the same element twice.",
-    exampleInput: "[2,7,11,15], 9",
-    exampleOutput: "[0,1]",
+const ProblemDetail = ({ problemId }) => {
+  const [problem, setProblem] = useState(null);
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchProblem = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:7000/problem/${problemId}`
+        );
+        setProblem(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching problem:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchProblem();
+  }, [problemId]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await axios.post(`http://localhost:7000/compiler`, {
+        problemId,
+        input,
+      });
+      setOutput(response.data.output);
+    } catch (error) {
+      console.error("Error submitting solution:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!problem) {
+    return <div>Problem not found.</div>;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto px-4 py-8 grid grid-cols-2 gap-8">
-        {/* Left Half */}
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">{problem.title}</h1>
+      <p className="text-gray-700 mb-4">{problem.description}</p>
+
+      <form onSubmit={handleSubmit} className="mb-4">
+        <label htmlFor="input" className="block mb-2">
+          Input:
+        </label>
+        <textarea
+          id="input"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          rows={5}
+          className="w-full border p-2 mb-2"
+          required
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </button>
+      </form>
+
+      {output && (
         <div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-2">Problem Description</h2>
-            <p>{problem.description}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <h2 className="text-xl font-bold mb-2">Input Format</h2>
-            <p>{problem.inputFormat}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <h2 className="text-xl font-bold mb-2">Output Format</h2>
-            <p>{problem.outputFormat}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <h2 className="text-xl font-bold mb-2">Constraints</h2>
-            <p>{problem.constraints}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <h2 className="text-xl font-bold mb-2">Example</h2>
-            <div className="border border-gray-300 rounded-md p-4 mt-2">
-              <div className="text-sm font-medium text-gray-600 mb-1">
-                Input
-              </div>
-              <code className="text-xs bg-gray-200 p-2 rounded-md block">
-                {problem.exampleInput}
-              </code>
-              <div className="text-sm font-medium text-gray-600 mt-4 mb-1">
-                Output
-              </div>
-              <code className="text-xs bg-gray-200 p-2 rounded-md block">
-                {problem.exampleOutput}
-              </code>
-            </div>
-          </div>
+          <h2 className="text-xl font-bold mb-2">Output:</h2>
+          <p className="text-gray-700 mb-4">{output}</p>
         </div>
-        {/* Right Half */}
-        <div>
-          {/* Console Layout */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-2">Console</h2>
-            {/* Add console layout here */}
-          </div>
-          {/* Input/Output Box */}
-          <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <h2 className="text-xl font-bold mb-2">Input/Output Box</h2>
-            {/* Add input/output box here */}
-          </div>
-          {/* Submit and Run Buttons */}
-          <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <h2 className="text-xl font-bold mb-2">Submit and Run</h2>
-            {/* Add submit and run buttons here */}
-          </div>
-        </div>
-      </div>
+      )}
+
+      {/* Integrate your compiler component here */}
+      {/* <CompilerComponent problemId={problemId} /> */}
     </div>
   );
 };
 
-export default ProblemDescription;
+ProblemDetail.propTypes = {
+  problemId: PropTypes.string.isRequired,
+};
+
+export default ProblemDetail;

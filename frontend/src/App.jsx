@@ -1,3 +1,4 @@
+// App.jsx
 import { useEffect, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "../App.css";
@@ -10,7 +11,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Problems from "./pages/Problems";
 import Profile from "./pages/Profile";
-// import ProblemDetail from "./components/ProblemDetail";
+import ProblemDetail from "./components/ProblemDetail";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -58,7 +59,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/problems" element={<Problems />} />
           <Route path="/profile" element={<Profile />} />
-          {/* <Route path="/problems/:id" element={<ProblemDetail />} /> */}
+          <Route path="/problems/:id" element={<ProblemDetail />} />
         </Routes>
       </div>
       <Footer />
