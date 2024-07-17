@@ -19,7 +19,7 @@ const ProblemItem = ({
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:7000/problem/${problem._id}`);
+      await axios.delete(`http://localhost:7000/problems/${problem._id}`);
       fetchProblems();
     } catch (error) {
       console.error("Error deleting problem:", error);
@@ -27,7 +27,7 @@ const ProblemItem = ({
   };
 
   const navigateToProblem = () => {
-    navigate(`/problem/${problem._id}`);
+    navigate(`/problems/${problem._id}`);
   };
 
   return (

@@ -1,97 +1,112 @@
-// ProblemDetail.jsx
-import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
+import Editor from "@monaco-editor/react";
 
-const ProblemDetail = ({ problemId }) => {
+const ProblemDetail = () => {
+  const { id } = useParams();
   const [problem, setProblem] = useState(null);
-  const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProblem = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7000/problem/${problemId}`
+          `http://localhost:7000/problems/${id}`
         );
-        setProblem(response.data);
-        setIsLoading(false);
+        const data = response.data;
+        setProblem(data);
       } catch (error) {
-        console.error("Error fetching problem:", error);
-        setIsLoading(false);
+        setError("Problem not found");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProblem();
-  }, [problemId]);
+  }, [id]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const response = await axios.post(`http://localhost:7000/compiler`, {
-        problemId,
-        input,
-      });
-      setOutput(response.data.output);
-    } catch (error) {
-      console.error("Error submitting solution:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (isLoading) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (!problem) {
-    return <div>Problem not found.</div>;
+  if (error) {
+    return <div>{error}</div>;
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">{problem.title}</h1>
-      <p className="text-gray-700 mb-4">{problem.description}</p>
+    <div className="flex flex-col lg:flex-row gap-4 p-4">
+      {/* Problem Description */}
+      <div className="lg:w-1/2">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4">{problem.title}</h2>
+          <p className="text-gray-700 mb-4">{problem.description}</p>
 
-      <form onSubmit={handleSubmit} className="mb-4">
-        <label htmlFor="input" className="block mb-2">
-          Input:
-        </label>
-        <textarea
-          id="input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={5}
-          className="w-full border p-2 mb-2"
-          required
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </button>
-      </form>
-
-      {output && (
-        <div>
-          <h2 className="text-xl font-bold mb-2">Output:</h2>
-          <p className="text-gray-700 mb-4">{output}</p>
+          <h3 className="text-lg font-bold mb-2">Sample Test Cases</h3>
+          {problem.sampleTestCases && problem.sampleTestCases.length > 0 ? (
+            <div className="divide-y divide-gray-200">
+              {problem.sampleTestCases.map((testCase, index) => (
+                <div key={index} className="py-4">
+                  <p className="text-gray-700 mb-2">
+                    <span className="font-bold">Input:</span> {testCase.input}
+                  </p>
+                  <p className="text-gray-700">
+                    <span className="font-bold">Output:</span> {testCase.output}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-700">No sample test cases available.</p>
+          )}
         </div>
-      )}
+      </div>
 
-      {/* Integrate your compiler component here */}
-      {/* <CompilerComponent problemId={problemId} /> */}
+      {/* Code Editor */}
+      <div className="lg:w-1/2">
+        <div className="bg-gray-100 p-6 rounded-lg shadow-md">
+          <h3 className="text-lg font-bold mb-4">Code Editor</h3>
+          <Editor
+            height="400px"
+            defaultLanguage="javascript"
+            defaultValue="// Write your code here"
+            theme="vs-dark"
+          />
+
+          {/* Input/Output */}
+          <div className="mt-6">
+            <h3 className="text-lg font-bold mb-2">Input</h3>
+            <textarea
+              className="w-full p-3 border rounded focus:outline-none focus:ring focus:border-blue-500"
+              rows="4"
+              placeholder="Enter input here"
+            ></textarea>
+          </div>
+
+          <div className="mt-4">
+            <h3 className="text-lg font-bold mb-2">Output</h3>
+            <textarea
+              className="w-full p-3 border rounded focus:outline-none focus:ring focus:border-blue-500"
+              rows="4"
+              readOnly
+              placeholder="Output will be displayed here"
+            ></textarea>
+          </div>
+
+          {/* Run/Submit Button */}
+          <div className="mt-6 flex justify-end">
+            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              Run Code
+            </button>
+            <button className="bg-green-500 text-white px-4 py-2 ml-2 rounded hover:bg-green-600">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-ProblemDetail.propTypes = {
-  problemId: PropTypes.string.isRequired,
 };
 
 export default ProblemDetail;

@@ -1,0 +1,28 @@
+node_modules/
+.env
+.vscode/
+
+# Compiled source files
+*.exe
+
+
+# Packages
+*.rar
+*.zip
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Node.js dependencies
+/node_modules
+/build
+
+# Python virtual environment
+/venv
+
+# Backend outputs (adjust path as needed)
+/backend/outputs

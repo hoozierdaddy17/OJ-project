@@ -69,15 +69,21 @@ const CreateProblem = ({ problem, onCancel }) => {
 
     try {
       if (problem) {
-        await axios.put(`/problem/${problem._id}`, payload);
+        await axios.put(
+          `http://localhost:7000/problem/${problem._id}`,
+          payload
+        );
         console.log("Problem updated successfully");
       } else {
-        await axios.post("/problem/create", payload);
+        await axios.post("http://localhost:7000/problem/create", payload);
         console.log("Problem created successfully");
       }
       onCancel();
     } catch (error) {
-      console.error("Error submitting problem:", error);
+      console.error(
+        "Error submitting problem:",
+        error.response ? error.response.data : error.message
+      );
     }
   };
 

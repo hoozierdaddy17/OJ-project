@@ -28,7 +28,7 @@ const problemRoute = require("./routes/problemRoutes");
 // Routes
 app.use("/auth", authRoute);
 app.use("/user", userRoute);
-app.use("/problem", problemRoute);
+app.use("/problems", problemRoute);
 
 // Start/activate the server
 const PORT = process.env.PORT || 7000;

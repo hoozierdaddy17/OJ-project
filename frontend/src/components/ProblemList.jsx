@@ -8,7 +8,7 @@ const ProblemList = ({ setEditProblem, setActive, isAdmin }) => {
 
   const fetchProblems = async () => {
     try {
-      const response = await axios.get("http://localhost:7000/problem");
+      const response = await axios.get("http://localhost:7000/problems");
       setProblems(response.data);
     } catch (error) {
       console.error("Error fetching problems:", error);
