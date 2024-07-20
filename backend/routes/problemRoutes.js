@@ -14,8 +14,8 @@ router.post("/create", problemController.createProblem);
 // // run code for problem by ID
 // router.post("/problems/:id/run", problemController.runProblem);
 
-// // submit code for problem by ID
-// router.post("/problems/:id/submit", problemController.submitProblem);
+// submit code for problem by ID
+router.post("/:id/submit", problemController.submitProblem);
 
 // update problem by ID
 router.put("/:id", problemController.updateProblem);
