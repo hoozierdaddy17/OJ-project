@@ -5,9 +5,15 @@ import Editor from "@monaco-editor/react";
 
 const ProblemDetail = () => {
   const { id } = useParams();
-  const [problem, setProblem] = useState(null);
+  const [problem, setProblem] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [code, setCode] = useState(
+    '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}'
+  );
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -15,8 +21,7 @@ const ProblemDetail = () => {
         const response = await axios.get(
           `http://localhost:7000/problems/${id}`
         );
-        const data = response.data;
-        setProblem(data);
+        setProblem(response.data);
       } catch (error) {
         setError("Problem not found");
       } finally {
@@ -26,6 +31,37 @@ const ProblemDetail = () => {
 
     fetchProblem();
   }, [id]);
+
+  const handleRunCode = async () => {
+    try {
+      const response = await axios.post("http://localhost:7500/run", {
+        language: "cpp",
+        code: code,
+        input: input,
+      });
+      setOutput(response.data.output);
+    } catch (error) {
+      setOutput(
+        error.response ? error.response.data.error : "An error occurred"
+      );
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("http://localhost:7500/submit", {
+        language: "cpp",
+        code: code,
+        hiddenTestCases: problem.hiddenTestCases,
+      });
+      setResults(response.data);
+    } catch (error) {
+      console.error("Error submitting code:", error);
+      if (error.response && error.response.data) {
+        console.error("Response data:", error.response.data);
+      }
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -69,8 +105,9 @@ const ProblemDetail = () => {
           <h3 className="text-lg font-bold mb-4">Code Editor</h3>
           <Editor
             height="400px"
-            defaultLanguage="javascript"
-            defaultValue="// Write your code here"
+            defaultLanguage="cpp"
+            value={code}
+            onChange={(value) => setCode(value)}
             theme="vs-dark"
           />
 
@@ -80,6 +117,8 @@ const ProblemDetail = () => {
             <textarea
               className="w-full p-3 border rounded focus:outline-none focus:ring focus:border-blue-500"
               rows="4"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
               placeholder="Enter input here"
             ></textarea>
           </div>
@@ -90,18 +129,56 @@ const ProblemDetail = () => {
               className="w-full p-3 border rounded focus:outline-none focus:ring focus:border-blue-500"
               rows="4"
               readOnly
+              value={output}
               placeholder="Output will be displayed here"
             ></textarea>
           </div>
 
           {/* Run/Submit Button */}
           <div className="mt-6 flex justify-end">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              onClick={handleRunCode}
+            >
               Run Code
             </button>
-            <button className="bg-green-500 text-white px-4 py-2 ml-2 rounded hover:bg-green-600">
+            <button
+              className="bg-green-500 text-white px-4 py-2 ml-2 rounded hover:bg-green-600"
+              onClick={handleSubmit}
+            >
               Submit
             </button>
+          </div>
+
+          {/* Display Results */}
+          <div className="mt-6">
+            <h3 className="text-lg font-bold mb-4">Test Results</h3>
+            {results && results.length > 0 ? (
+              <div>
+                {results.map((result, index) => (
+                  <div key={index} className="flex flex-col mb-2">
+                    <div>
+                      <span className="font-bold">Input:</span> {result.input}
+                    </div>
+                    <div>
+                      <span className="font-bold">Expected Output:</span>{" "}
+                      {result.output}
+                    </div>
+                    <div>
+                      <span className="font-bold">Actual Output:</span>{" "}
+                      {result.actualOutput}
+                    </div>
+                    {result.passed ? (
+                      <span className="text-green-500">✔️</span>
+                    ) : (
+                      <span className="text-red-500">❌</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No test results available.</p>
+            )}
           </div>
         </div>
       </div>
