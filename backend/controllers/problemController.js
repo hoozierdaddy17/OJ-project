@@ -1,7 +1,7 @@
 const Problem = require("../models/Problem");
 const path = require("path");
 const fs = require("fs");
-const { executeCpp } = require("../../compiler/executeCpp"); // Adjust path as necessary
+const { executeCpp } = require("../../compiler/executeCpp"); 
 
 const problemController = {
   // Get all problems

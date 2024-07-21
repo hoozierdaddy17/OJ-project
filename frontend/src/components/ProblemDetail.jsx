@@ -159,10 +159,18 @@ const ProblemDetail = () => {
             {results && results.length > 0 ? (
               <div>
                 {results.map((result, index) => (
-                  <div key={index} className="flex items-center mb-2">
-                    <div className="mr-2">
+                  <div key={index} className="py-4">
+                    <p className="text-gray-700 mb-2">
                       <span className="font-bold">Input:</span> {result.input}
-                    </div>
+                    </p>
+                    <p className="text-gray-700 mb-2">
+                      <span className="font-bold">Expected Output:</span>{" "}
+                      {result.expectedOutput}
+                    </p>
+                    <p className="text-gray-700 mb-2">
+                      <span className="font-bold">Actual Output:</span>{" "}
+                      {result.actualOutput}
+                    </p>
                     {result.passed ? (
                       <span className="text-green-500">✔️</span>
                     ) : (
