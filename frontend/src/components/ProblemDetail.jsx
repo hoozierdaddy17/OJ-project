@@ -54,6 +54,7 @@ const ProblemDetail = () => {
         code: code,
         hiddenTestCases: problem.hiddenTestCases,
       });
+
       setResults(response.data);
     } catch (error) {
       console.error("Error submitting code:", error);
@@ -153,32 +154,24 @@ const ProblemDetail = () => {
           {/* Display Results */}
           <div className="mt-6">
             <h3 className="text-lg font-bold mb-4">Test Results</h3>
-            {results && results.length > 0 ? (
-              <div>
-                {results.map((result, index) => (
-                  <div key={index} className="flex flex-col mb-2">
-                    <div>
-                      <span className="font-bold">Input:</span> {result.input}
-                    </div>
-                    <div>
-                      <span className="font-bold">Expected Output:</span>{" "}
-                      {result.output}
-                    </div>
-                    <div>
-                      <span className="font-bold">Actual Output:</span>{" "}
-                      {result.actualOutput}
-                    </div>
-                    {result.passed ? (
-                      <span className="text-green-500">✔️</span>
-                    ) : (
-                      <span className="text-red-500">❌</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>No test results available.</p>
-            )}
+            <div className="flex flex-wrap gap-2">
+              {results && results.length > 0 ? (
+                results.map((result, index) => (
+                  <button
+                    key={index}
+                    className={`px-4 py-2 rounded ${
+                      result.passed
+                        ? "bg-green-200 text-green-700"
+                        : "bg-red-200 text-red-700"
+                    }`}
+                  >
+                    {`Case ${index + 1} ${result.passed ? "passed" : "failed"}`}
+                  </button>
+                ))
+              ) : (
+                <p>No test results available.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

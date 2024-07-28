@@ -1,7 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const { executeCpp } = require("./executeCpp"); 
+const { executeCpp } = require("./executeCpp");
 
 const router = express.Router();
 
@@ -17,28 +17,24 @@ router.post("/submit", async (req, res) => {
   }
 
   const results = [];
-  const tempDir = path.join(__dirname, "temp");
+  const tempDir = path.join(__dirname, "temp", "submission"); // Adjust directory
 
   // Ensure the temporary directory exists
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir, { recursive: true });
   }
 
-  // Prepare the temporary files
   const filePath = path.join(tempDir, `submission.cpp`);
   fs.writeFileSync(filePath, code);
 
   for (const testCase of hiddenTestCases) {
     const inputPath = path.join(tempDir, `input.txt`);
-    const outputPath = path.join(tempDir, `output.txt`);
 
-    // Save the input to a temporary file
     fs.writeFileSync(inputPath, testCase.input);
 
-    // Execute the C++ code
     try {
-      await executeCpp(filePath, inputPath, outputPath);
-      const actualOutput = fs.readFileSync(outputPath, "utf8").trim();
+      const outputData = await executeCpp(filePath, inputPath);
+      const actualOutput = outputData.trim();
       const expectedOutput = testCase.output.trim();
       const passed = actualOutput === expectedOutput;
 

@@ -79,7 +79,7 @@ const problemController = {
     }
   },
 
-  submitProblem: async (req, res) => {
+   submitProblem: async (req, res) => {
     const { language, code } = req.body;
     const { id } = req.params;
 
@@ -98,18 +98,20 @@ const problemController = {
         return res.status(400).json({ error: "Unsupported language" });
       }
 
+      const hiddenTestCases = problem.hiddenTestCases.map((testCase) => ({
+        input: testCase.input,
+        output: testCase.output,
+      }));
+
       // Prepare data for compiler backend
       const requestData = {
         language: "cpp",
         code: code,
-        testCases: problem.hiddenTestCases,
+        testCases: hiddenTestCases,
       };
 
       // Make API call to the compiler backend
-      const response = await axios.post(
-        "http://localhost:7500/submit",
-        requestData
-      );
+      const response = await axios.post('http://localhost:7500/submit', requestData);
 
       // Return results from the compiler backend
       res.status(200).json(response.data);
