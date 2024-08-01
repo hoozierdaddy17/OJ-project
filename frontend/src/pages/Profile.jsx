@@ -6,6 +6,7 @@ import { BsEye, BsEyeSlash } from "react-icons/bs";
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
+  const [submissions, setSubmissions] = useState([]);
   const [editMode, setEditMode] = useState({
     username: false,
     email: false,
@@ -47,6 +48,27 @@ const ProfilePage = () => {
       });
     }
   }, [userData, editMode.fullname]);
+
+  useEffect(() => {
+    const fetchSubmissions = async () => {
+      if (activeTab === "submissions") {
+        try {
+          const token = Cookies.get("token");
+          const response = await axios.get(
+            "http://localhost:7000/submissions",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          console.log("Fetched submissions:", response.data);
+          setSubmissions(response.data);
+        } catch (error) {
+          console.error("Error fetching submissions:", error);
+        }
+      }
+    };
+    fetchSubmissions();
+  }, [activeTab]);
 
   const handleUpdateProfile = async () => {
     if (updatedFields.newPassword !== updatedFields.confirmNewPassword) {
@@ -310,9 +332,50 @@ const ProfilePage = () => {
               <h2 className="text-2xl font-bold text-gray-800 mb-4">
                 Submissions
               </h2>
-              <div className="p-4 bg-gray-200 rounded shadow">
-                {/* Content for Submissions tab */}
-              </div>
+              {submissions.length > 0 ? (
+                <div className="p-4 bg-gray-200 rounded shadow">
+                  <table className="w-full bg-white border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="p-2 border-b text-center">ID</th>
+                        <th className="p-2 border-b text-center">Problem ID</th>
+                        <th className="p-2 border-b text-center">Language</th>
+                        <th className="p-2 border-b text-center">Verdict</th>
+                        <th className="p-2 border-b text-center">Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {submissions.map((submission) => (
+                        <tr key={submission._id} className="hover:bg-gray-50">
+                          <td className="p-2 border-b text-center">
+                            {submission._id}
+                          </td>
+                          <td className="p-2 border-b text-center">
+                            {submission.problemId}
+                          </td>
+                          <td className="p-2 border-b text-center">
+                            {submission.language}
+                          </td>
+                          <td
+                            className={`p-2 border-b text-center ${
+                              submission.verdict === "Accepted"
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {submission.verdict}
+                          </td>
+                          <td className="p-2 border-b text-center">
+                            {new Date(submission.timestamp).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p>No submissions found.</p>
+              )}
             </div>
           )}
         </main>

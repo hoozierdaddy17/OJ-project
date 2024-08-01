@@ -1,8 +1,15 @@
 const express = require("express");
-const { submitCode } = require("../controllers/submissionController"); 
+const {
+  submitCode,
+  getSubmissions,
+} = require("../controllers/submissionController");
 
 const router = express.Router();
 
-router.post("/submit", submitCode);
+// Route for code submission
+router.post("/", submitCode);
+
+// Route for fetching submissions
+router.get("/", getSubmissions);
 
 module.exports = router;

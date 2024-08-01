@@ -24,6 +24,8 @@ dbConnection();
 const authRoute = require("./routes/authRoutes");
 const userRoute = require("./routes/userRoutes");
 const problemRoute = require("./routes/problemRoutes");
+const submissionRoute = require("./routes/submissionRoutes"); 
+
 
 // Public routes
 app.use("/auth", authRoute);
@@ -31,6 +33,7 @@ app.use("/profile", userRoute);
 
 // Protected routes
 app.use("/problems", problemRoute);
+app.use("/submissions", submissionRoute);
 
 
 // Start/activate the server

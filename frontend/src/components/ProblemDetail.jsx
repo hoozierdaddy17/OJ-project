@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import axios from "axios";
 import Editor from "@monaco-editor/react";
+import Cookies from "js-cookie"; // Assuming you use js-cookie to handle tokens
 
 const ProblemDetail = ({ user }) => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const ProblemDetail = ({ user }) => {
   const [results, setResults] = useState([]);
   const [verdict, setVerdict] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRunningCode, setIsRunningCode] = useState(false);
   const [language, setLanguage] = useState("cpp");
 
   // Default code snippets for different languages
@@ -24,7 +26,6 @@ const ProblemDetail = ({ user }) => {
     java: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
   };
 
-  // Update default code based on the selected language
   useEffect(() => {
     setCode(defaultCodeSnippets[language] || "");
   }, [language]);
@@ -47,6 +48,7 @@ const ProblemDetail = ({ user }) => {
   }, [id]);
 
   const handleRunCode = async () => {
+    setIsRunningCode(true);
     try {
       const response = await axios.post("http://localhost:7500/run", {
         language,
@@ -58,6 +60,8 @@ const ProblemDetail = ({ user }) => {
       setOutput(
         error.response ? error.response.data.error : "An error occurred"
       );
+    } finally {
+      setIsRunningCode(false);
     }
   };
 
@@ -65,24 +69,29 @@ const ProblemDetail = ({ user }) => {
     setIsSubmitting(true);
     setResults([]);
     setVerdict(null);
+
+    const problemId = problem._id;
+
     try {
-      const response = await axios.post("http://localhost:7500/submit", {
-        language,
-        code,
-        hiddenTestCases: problem.hiddenTestCases,
-      });
+      const token = Cookies.get("token");
 
-      setResults(response.data);
-      const allPassed = response.data.every((result) => result.passed);
-      setVerdict(allPassed ? "Accepted" : "Failed");
+      const response = await axios.post(
+        "http://localhost:7000/submissions",
+        {
+          problemId,
+          language,
+          code,
+          hiddenTestCases: problem.hiddenTestCases,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      await axios.post("http://localhost:7000/submissions", {
-        user: user.name,
-        problemId: problem._id,
-        verdict,
-        language,
-        timestamp: new Date().toISOString(),
-      });
+      setResults(response.data.results);
+      setVerdict(response.data.verdict);
     } catch (error) {
       console.error("Error submitting code:", error);
       if (error.response && error.response.data) {
@@ -153,9 +162,9 @@ const ProblemDetail = ({ user }) => {
           <h3 className="text-lg font-bold mb-4">Code Editor</h3>
           <Editor
             height="400px"
-            language={language}  
+            language={language}
             value={code}
-            onChange={(value) => setCode(value || "")}  
+            onChange={(value) => setCode(value || "")}
             theme="vs-dark"
           />
 
@@ -185,13 +194,40 @@ const ProblemDetail = ({ user }) => {
           {/* Run/Submit Button */}
           <div className="mt-6 flex justify-end">
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2"
               onClick={handleRunCode}
+              disabled={isRunningCode}
             >
-              Run Code
+              {isRunningCode ? (
+                <div className="flex items-center">
+                  <span className="mr-2">Running...</span>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                </div>
+              ) : (
+                "Run Code"
+              )}
             </button>
             <button
-              className="bg-green-500 text-white px-4 py-2 ml-2 rounded hover:bg-green-600"
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
@@ -220,7 +256,7 @@ const ProblemDetail = ({ user }) => {
                   </svg>
                 </div>
               ) : (
-                "Submit"
+                "Submit Code"
               )}
             </button>
           </div>
@@ -266,9 +302,7 @@ const ProblemDetail = ({ user }) => {
 };
 
 ProblemDetail.propTypes = {
-  user: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-  }).isRequired,
+  user: PropTypes.object.isRequired,
 };
 
 export default ProblemDetail;

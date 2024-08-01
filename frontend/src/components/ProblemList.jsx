@@ -35,10 +35,12 @@ const ProblemList = ({ setEditProblem, setActive, isAdmin }) => {
         (problem) => problem.difficulty === selectedDifficulty
       );
     }
-
+    console.log(problems);
+    console.log(filtered);
+    console.log(selectedDifficulty);
     if (selectedTags.length > 0) {
       filtered = filtered.filter((problem) =>
-        selectedTags.every((tag) => problem.tags.includes(tag))
+        selectedTags.every((tag) => problem.problemTags.includes(tag))
       );
     }
 

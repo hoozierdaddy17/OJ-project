@@ -133,6 +133,7 @@ const authController = {
       // Including user information in the response
       res.status(200).json({
         token,
+        userid: user._id,
         isAdmin: user.isAdmin,
         firstname: user.firstname,
         lastname: user.lastname,
