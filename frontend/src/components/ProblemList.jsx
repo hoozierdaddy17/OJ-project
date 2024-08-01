@@ -9,7 +9,7 @@ const ProblemList = ({ setEditProblem, setActive, isAdmin }) => {
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [difficulty, setDifficulty] = useState("All");
   const [tags, setTags] = useState([]);
-
+  console.log(problems);
   const fetchProblems = async () => {
     try {
       const response = await axios.get("http://localhost:7000/problems");

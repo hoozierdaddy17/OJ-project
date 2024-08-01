@@ -57,7 +57,7 @@ const ProblemItem = ({
         </div>
         <p className="text-gray-700 mb-2">{problem.description}</p>
         <div className="flex flex-wrap gap-2">
-          {(problem.tags || []).map((tag) => (
+          {(problem.problemTags || []).map((tag) => (
             <span
               key={tag}
               className="px-3 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-800"
@@ -93,7 +93,7 @@ ProblemItem.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     difficulty: PropTypes.oneOf(["Easy", "Medium", "Hard"]).isRequired,
-    tags: PropTypes.arrayOf(PropTypes.string), // tags can be undefined
+    problemTags: PropTypes.arrayOf(PropTypes.string), // tags can be undefined
   }).isRequired,
   setEditProblem: PropTypes.func.isRequired,
   setActive: PropTypes.func.isRequired,

@@ -1,48 +1,25 @@
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
+// const __dirname = path.resolve();
 
-// Directory path for outputs
-const outputDir = path.join(__dirname, "outputs");
+const executePython = async (filePath, inputPath) => {
 
-// Create the output directory if it doesn't exist
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, { recursive: true });
-}
+  const output = new Promise((resolve, reject) => {
+    const fullCommand = `python ${filePath} < ${inputPath}`;
+    console.log(fullCommand);
 
-const executePython = (code, input) => {
-  const jobId = Date.now().toString();
-  const codePath = path.join(outputDir, `${jobId}.py`);
-  const inputPath = path.join(outputDir, `${jobId}.txt`);
-  const outputFilePath = path.join(outputDir, `${jobId}_output.txt`);
-
-  // Write the code and input to respective files
-  fs.writeFileSync(codePath, code);
-  fs.writeFileSync(inputPath, input);
-
-  return new Promise((resolve, reject) => {
-    // Command to run the Python script and redirect output to file
-    const runCommand = `python ${codePath} < ${inputPath} > ${outputFilePath}`;
-
-    exec(runCommand, (error, stdout, stderr) => {
+    exec(fullCommand, (error, stdout, stderr) => {
       if (error) {
-        return reject({ error, stderr });
+        reject(new Error(`Execution error: ${error.message}`));
+      } else if (stderr) {
+        reject(new Error(`Execution error: ${stderr}`));
+      } else {
+        resolve(stdout);
       }
-      if (stderr) {
-        return reject(stderr);
-      }
-      // Read the output from the file
-      fs.readFile(outputFilePath, "utf8", (err, data) => {
-        if (err) {
-            console.log(err);
-          return reject(
-            new Error(`Failed to read output file: ${err.message}`)
-          );
-        }
-        resolve(data);
-      });
     });
   });
+  return output;
 };
 
 module.exports = {

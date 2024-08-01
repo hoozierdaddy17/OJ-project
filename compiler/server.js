@@ -19,6 +19,7 @@ app.get("/", (req, res) => {
 
 app.post("/run", async (req, res) => {
   const { language = "cpp", code, input } = req.body;
+
   if (code === undefined || !code) {
     return res.status(404).json({ success: false, error: "Empty code!" });
   }
@@ -33,24 +34,21 @@ app.post("/run", async (req, res) => {
     const inputPath = await generateInputFile(input);
 
     // Define the execution function based on the language
-    let executeFunction;
+    let output;
     switch (language) {
       case "cpp":
-        executeFunction = executeCpp;
+        output = await executeCpp(filePath, inputPath);
         break;
       case "python":
-        executeFunction = executePython;
+        output = await executePython(filePath, inputPath);
         break;
       case "java":
-        executeFunction = executeJava;
+        output = await executeJava(filePath, inputPath);
         break;
       default:
         return res.status(400).json({ error: "Unsupported language" });
     }
-
-    // Execute code with input
-    const output = await executeFunction(filePath, inputPath);
-
+    console.log(output);
     // Send response with file paths and output
     res.json({ filePath, inputPath, output });
   } catch (error) {

@@ -2,40 +2,31 @@ const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 
-const executeJava = (filePath, inputPath) => {
-  const jobId = path.basename(filePath).split(".")[0];
-  const jobOutputDir = path.join(__dirname, "temp", "submission", jobId); // Correct path
-  const outputFilename = "output.txt";
-  const outPath = path.join(jobOutputDir, outputFilename);
-  const classPath = path.join(jobOutputDir, `${jobId}.class`);
-  const javaPath = path.join(jobOutputDir, `${jobId}.java`);
+const executeJava = async (filePath, inputPath) => {
+  const jobId = path.basename(filePath, ".java"); // Remove .java extension
+  const jobOutputDir = path.join(__dirname, "codes/java");
 
-  // Create job-specific directory if it doesn't exist
+  // Create output directory if it doesn't exist
   if (!fs.existsSync(jobOutputDir))
     fs.mkdirSync(jobOutputDir, { recursive: true });
 
-  // Copy the Java file to the job-specific directory
-  fs.copyFileSync(filePath, javaPath);
-
   return new Promise((resolve, reject) => {
-    const compileCommand = `javac ${javaPath}`;
-    const runCommand = `java -cp ${jobOutputDir} ${jobId} < ${inputPath} > ${outPath}`;
-    const fullCommand = `${compileCommand} && ${runCommand}`;
+    // Full command to compile and run Java code
+    const compileCommand = `javac ${filePath} -d ${jobOutputDir}`;
+    const runCommand = `java -cp ${jobOutputDir} ${jobId} < ${inputPath}`;
 
-    exec(fullCommand, (error, stdout, stderr) => {
-      if (error) {
-        reject(new Error(`Execution error: ${error.message}`));
-      } else if (stderr) {
-        reject(new Error(`Execution error: ${stderr}`));
+    // Execute commands
+    exec(`${compileCommand} && ${runCommand}`, (error, stdout, stderr) => {
+      if (error || stderr) {
+        reject(new Error(`Execution error: ${stderr || error.message}`));
       } else {
-        fs.readFile(outPath, "utf8", (err, data) => {
-          if (err) {
-            reject(new Error(`Failed to read output file: ${err.message}`));
-          } else {
-            resolve(data);
-          }
-        });
+        resolve(stdout);
       }
+
+      // Clean up class file after execution
+      fs.unlink(path.join(jobOutputDir, `${jobId}.class`), (err) => {
+        if (err) console.error(`Error deleting file: ${jobId}.class`, err);
+      });
     });
   });
 };
