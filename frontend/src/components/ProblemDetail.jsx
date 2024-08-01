@@ -1,19 +1,33 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import PropTypes from "prop-types";
 import axios from "axios";
 import Editor from "@monaco-editor/react";
 
-const ProblemDetail = () => {
+const ProblemDetail = ({ user }) => {
   const { id } = useParams();
   const [problem, setProblem] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [code, setCode] = useState(
-    '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}'
-  );
+  const [code, setCode] = useState("");
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [results, setResults] = useState([]);
+  const [verdict, setVerdict] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [language, setLanguage] = useState("cpp");
+
+  // Default code snippets for different languages
+  const defaultCodeSnippets = {
+    cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}',
+    python: 'print("Hello, World!")',
+    java: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+  };
+
+  // Update default code based on the selected language
+  useEffect(() => {
+    setCode(defaultCodeSnippets[language] || "");
+  }, [language]);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -35,9 +49,9 @@ const ProblemDetail = () => {
   const handleRunCode = async () => {
     try {
       const response = await axios.post("http://localhost:7500/run", {
-        language: "cpp",
-        code: code,
-        input: input,
+        language,
+        code,
+        input,
       });
       setOutput(response.data.output);
     } catch (error) {
@@ -48,19 +62,34 @@ const ProblemDetail = () => {
   };
 
   const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setResults([]);
+    setVerdict(null);
     try {
       const response = await axios.post("http://localhost:7500/submit", {
-        language: "cpp",
-        code: code,
+        language,
+        code,
         hiddenTestCases: problem.hiddenTestCases,
       });
 
       setResults(response.data);
+      const allPassed = response.data.every((result) => result.passed);
+      setVerdict(allPassed ? "Accepted" : "Failed");
+
+      await axios.post("http://localhost:7000/submissions", {
+        user: user.name,
+        problemId: problem._id,
+        verdict,
+        language,
+        timestamp: new Date().toISOString(),
+      });
     } catch (error) {
       console.error("Error submitting code:", error);
       if (error.response && error.response.data) {
         console.error("Response data:", error.response.data);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -103,12 +132,30 @@ const ProblemDetail = () => {
       {/* Code Editor */}
       <div className="lg:w-1/2">
         <div className="bg-gray-100 p-6 rounded-lg shadow-md">
+          <div className="mb-4">
+            {/* Language Selection */}
+            <label htmlFor="language" className="block font-bold mb-2">
+              Select Language:
+            </label>
+            <select
+              id="language"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            >
+              <option value="cpp">C++</option>
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+              {/* Add more languages as needed */}
+            </select>
+          </div>
+
           <h3 className="text-lg font-bold mb-4">Code Editor</h3>
           <Editor
             height="400px"
-            defaultLanguage="cpp"
+            language={language}  
             value={code}
-            onChange={(value) => setCode(value)}
+            onChange={(value) => setCode(value || "")}  
             theme="vs-dark"
           />
 
@@ -146,17 +193,44 @@ const ProblemDetail = () => {
             <button
               className="bg-green-500 text-white px-4 py-2 ml-2 rounded hover:bg-green-600"
               onClick={handleSubmit}
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? (
+                <div className="flex items-center">
+                  <span className="mr-2">Submitting...</span>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                </div>
+              ) : (
+                "Submit"
+              )}
             </button>
           </div>
 
           {/* Display Results */}
-          <div className="mt-6">
-            <h3 className="text-lg font-bold mb-4">Test Results</h3>
-            <div className="flex flex-wrap gap-2">
-              {results && results.length > 0 ? (
-                results.map((result, index) => (
+          {results.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-lg font-bold mb-4">Test Results</h3>
+              <div className="flex flex-wrap gap-2">
+                {results.map((result, index) => (
                   <button
                     key={index}
                     className={`px-4 py-2 rounded ${
@@ -167,16 +241,34 @@ const ProblemDetail = () => {
                   >
                     {`Case ${index + 1} ${result.passed ? "passed" : "failed"}`}
                   </button>
-                ))
-              ) : (
-                <p>No test results available.</p>
+                ))}
+              </div>
+              {verdict && (
+                <div className="mt-6 flex items-center">
+                  <p className="text-lg font-bold mr-2">Verdict:</p>
+                  <span
+                    className={`${
+                      verdict === "Accepted"
+                        ? "text-xl font-bold text-green-500"
+                        : "text-xl font-bold text-red-500"
+                    }`}
+                  >
+                    {verdict}
+                  </span>
+                </div>
               )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
   );
+};
+
+ProblemDetail.propTypes = {
+  user: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default ProblemDetail;

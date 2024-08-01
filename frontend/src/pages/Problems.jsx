@@ -5,12 +5,12 @@ import CreateProblem from "../components/CreateProblem";
 const Problems = () => {
   const [editProblem, setEditProblem] = useState(null);
   const [active, setActive] = useState(false);
-  const isAdmin = true; // Replace with actual admin check from auth state
+  const isAdmin = true; 
 
   return (
     <div className="flex flex-col lg:flex-row flex-1 min-h-screen">
       <div className="lg:w-1/4 p-4 bg-gray-200">
-        <h2 className="text-2xl font-bold mb-4">Admin Panel</h2>
+        <h2 className="text-2xl font-bold mb-4">User Panel</h2>
         <ul>
           <li className="mb-2">
             <button

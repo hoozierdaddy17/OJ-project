@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
   const [firstname, setFirstname] = useState("");
@@ -8,10 +10,13 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("Normal User");
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    const isAdmin = role === "Admin";
+
     try {
       const response = await axios.post("http://localhost:7000/auth/signup", {
         firstname,
@@ -19,22 +24,24 @@ const Signup = () => {
         username,
         email,
         password,
-        isAdmin: true,
+        isAdmin,
       });
 
       if (response.status === 201) {
         navigate("/login");
-      } else {
-        alert("Signup failed, please try again.");
+        toast.success("Signup successful! Please log in.");
       }
     } catch (error) {
-      console.error("Signup error:", error);
-      alert("Signup failed. Please check the console for details.");
+      // Extract and display the error message
+      const errorMessage =
+        error.response?.data?.msg || "Signup failed. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <ToastContainer />
       <div className="bg-white p-6 rounded shadow-md space-y-4 w-full max-w-sm">
         <h1 className="text-2xl font-bold mb-4 text-center">Sign Up</h1>
         <form onSubmit={handleSignup} className="space-y-4">
@@ -107,6 +114,21 @@ const Signup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+          </div>
+          <div>
+            <label htmlFor="role" className="block mb-1">
+              Role:
+            </label>
+            <select
+              name="role"
+              id="role"
+              className="w-full p-2 border rounded"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="Normal User">Normal User</option>
+              <option value="Admin">Admin</option>
+            </select>
           </div>
           <button
             type="submit"

@@ -63,7 +63,7 @@ const authController = {
         username,
         email,
         password: hashedPassword,
-        isAdmin: isAdmin == true ? true : false,
+        isAdmin,
       });
 
       // Generate JWT token and save in cookies
@@ -130,7 +130,14 @@ const authController = {
         }
       );
 
-      res.status(200).json({ token });
+      // Including user information in the response
+      res.status(200).json({
+        token,
+        isAdmin: user.isAdmin,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        message: `Logged in successfully! Welcome, ${user.firstname} ${user.lastname}.`,
+      });
     } catch (error) {
       console.error("Login error:", error);
       res.status(500).send("Server Error");

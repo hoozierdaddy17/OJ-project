@@ -18,13 +18,16 @@ const Login = ({ onLogin }) => {
         email,
         password,
       });
+
+      const userRole = response.data.isAdmin ? "Admin" : "Normal";
+      console.log("User role after login:", userRole);
       // Store token as a cookie
       Cookies.set("token", response.data.token, { expires: 1 }); // Expires in 1 day
       onLogin(); // Call the onLogin function passed as prop
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
-      setError("Invalid credentials. Please check your email and password."); // Set error message for display
+      setError("Invalid credentials. Please check your email and password.");
     }
   };
 

@@ -1,6 +1,7 @@
-// App.jsx
 import { useEffect, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../App.css";
 
 // pages & components
@@ -26,6 +27,7 @@ function App() {
 
   const handleLogin = () => {
     setIsLoggedIn(true);
+    toast.success("Logged in successfully!"); // Show success notification on login
   };
 
   const handleLogout = async () => {
@@ -34,23 +36,24 @@ function App() {
         method: "POST",
       });
 
-      const data = await response.json(); // Parse response JSON
-
       if (response.ok) {
         setIsLoggedIn(false);
         localStorage.removeItem("token");
         navigate("/");
-        console.log(data.msg); // Log the response message
+        toast.info("Logged out successfully!"); // Show info notification on logout
       } else {
         console.error("Failed to log out");
+        toast.error("Failed to log out. Please try again."); // Show error notification
       }
     } catch (error) {
       console.error("Error logging out:", error);
+      toast.error("An error occurred while logging out."); // Show error notification
     }
   };
 
   return (
     <div className="App">
+      <ToastContainer />
       <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       <div className="pages">
         <Routes>

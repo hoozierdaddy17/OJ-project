@@ -21,14 +21,12 @@ const userController = {
 
       res.status(200).json(user);
     } catch (error) {
-      console.error("Error getting profile: ", error);
-      res.status(500).send("Server Error while getting profile");
+      console.error("Error fetching profile:", error);
+      res.status(500).json({ message: "Server error" });
     }
   },
 
   updateProfile: async (req, res) => {
-    const { username, email, password } = req.body;
-
     try {
       const token = req.header("Authorization");
       if (!token) {
@@ -38,6 +36,8 @@ const userController = {
       }
 
       const decoded = jwt.verify(token.split(" ")[1], process.env.SECRET_KEY);
+      const { username, email, firstname, lastname, password } = req.body;
+
       const user = await User.findById(decoded.id);
 
       if (!user) {
@@ -46,17 +46,18 @@ const userController = {
 
       if (username) user.username = username;
       if (email) user.email = email;
+      if (firstname) user.firstname = firstname; 
+      if (lastname) user.lastname = lastname; 
       if (password) {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
       }
 
-      await user.save();
-
-      res.status(200).json(user);
+      const updatedUser = await user.save();
+      res.status(200).json(updatedUser);
     } catch (error) {
-      console.error("Error updating profile: ", error);
-      res.status(500).send("Server Error while updating profile");
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Server error" });
     }
   },
 };

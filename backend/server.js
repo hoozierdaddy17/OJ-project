@@ -25,10 +25,13 @@ const authRoute = require("./routes/authRoutes");
 const userRoute = require("./routes/userRoutes");
 const problemRoute = require("./routes/problemRoutes");
 
-// Routes
+// Public routes
 app.use("/auth", authRoute);
-app.use("/user", userRoute);
+app.use("/profile", userRoute);
+
+// Protected routes
 app.use("/problems", problemRoute);
+
 
 // Start/activate the server
 const PORT = process.env.PORT || 7000;
