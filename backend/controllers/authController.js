@@ -68,7 +68,7 @@ const authController = {
 
       // Generate JWT token and save in cookies
       const token = jwt.sign(
-        { id: newUser._id, email: newUser.email },
+        { id: newUser._id, email: newUser.email, isAdmin: true },
         process.env.SECRET_KEY,
         {
           expiresIn: "24h",

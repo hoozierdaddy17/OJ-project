@@ -7,6 +7,7 @@ const problemController = {
   // Get all problems
   getProblems: async (req, res) => {
     try {
+
       const problems = await Problem.find();
       res.status(200).json(problems);
     } catch (error) {
