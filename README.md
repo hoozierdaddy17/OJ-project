@@ -1,1 +1,1 @@
-# OJ-Project# Online-Judge
+# OJ-Project
