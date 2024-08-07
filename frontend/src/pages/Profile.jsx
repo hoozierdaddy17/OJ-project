@@ -61,7 +61,7 @@ const ProfilePage = () => {
             }
           );
           console.log("Fetched submissions:", response.data);
-          setSubmissions(response.data);
+          setSubmissions(response.data.reverse());
         } catch (error) {
           console.error("Error fetching submissions:", error);
         }
@@ -329,15 +329,14 @@ const ProfilePage = () => {
           )}
           {activeTab === "submissions" && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 w-full">
                 Submissions
               </h2>
               {submissions.length > 0 ? (
-                <div className="p-4 bg-gray-200 rounded shadow">
-                  <table className="w-full bg-white border border-gray-300">
+                <div className="bg-white bg-opacity-60 backdrop-blur-lg border border-gray-300 rounded-lg shadow-lg p-4">
+                  <table className="w-full border border-gray-300">
                     <thead>
-                      <tr className="bg-gray-100">
-                        <th className="p-2 border-b text-center">ID</th>
+                      <tr className="bg-cyan-700 text-white">
                         <th className="p-2 border-b text-center">Problem ID</th>
                         <th className="p-2 border-b text-center">Language</th>
                         <th className="p-2 border-b text-center">Verdict</th>
@@ -347,9 +346,6 @@ const ProfilePage = () => {
                     <tbody>
                       {submissions.map((submission) => (
                         <tr key={submission._id} className="hover:bg-gray-50">
-                          <td className="p-2 border-b text-center">
-                            {submission._id}
-                          </td>
                           <td className="p-2 border-b text-center">
                             {submission.problemId}
                           </td>

@@ -23,8 +23,11 @@ const Filter = ({ onFilter }) => {
   return (
     <div className="mb-6 p-4 bg-gray-100 shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-4 text-gray-900">Filters</h2>
-      <div className="flex flex-col lg:flex-row lg:justify-between mb-4">
-        <div className="flex items-center mb-4 lg:mb-0">
+      <div className="flex flex-col lg:flex-row lg:justify-between">
+        {/* Difficulty Filter */}
+        <div className="flex items-center mb-6 lg:mb-0 pr-4">
+          {" "}
+          {/* Adjusted margin-bottom */}
           <label
             htmlFor="difficulty"
             className="mr-2 text-gray-800 font-semibold"
@@ -43,12 +46,26 @@ const Filter = ({ onFilter }) => {
             <option value="hard">Hard</option>
           </select>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {["Binary Search", "Array", "Dynamic Programming"].map((tag) => (
+
+        {/* Tags Filter */}
+        <div className="flex flex-wrap gap-2 mt-6">
+          {" "}
+          {/* Added margin-top */}
+          {[
+            "Binary Search",
+            "Array",
+            "Dynamic Programming",
+            "Strings",
+            "Two Pointers",
+            "Sliding Window",
+            "Topo Sorting",
+            "Graphs",
+            "Math",
+          ].map((tag) => (
             <button
               key={tag}
               onClick={() => handleTagChange(tag)}
-              className={`px-4 py-2 rounded-lg font-semibold border ${
+              className={`px-2 py-1 rounded-lg font-semibold border ${
                 selectedTags.includes(tag)
                   ? "bg-teal-500 text-white border-teal-500"
                   : "bg-gray-300 text-gray-800 border-gray-400"

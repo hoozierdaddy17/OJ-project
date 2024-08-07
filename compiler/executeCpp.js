@@ -8,14 +8,14 @@ const executeCpp = async (filePath, inputPath) => {
   const jobOutputDir = path.join(__dirname, "codes/cpp");
   // const outputFilename = "output.txt";
   // const outPath = path.join(jobOutputDir, outputFilename);
-  const exePath = path.join(jobOutputDir, `${jobId}.exe`);
+  const exePath = path.join(jobOutputDir, `${jobId}.out`);
 
   // Create job-specific directory if it doesn't exist
   if (!fs.existsSync(jobOutputDir))
     fs.mkdirSync(jobOutputDir, { recursive: true });
 
   const output = new Promise((resolve, reject) => {
-    const fullCommand = `g++ ${filePath} -o ${exePath} && cd ${jobOutputDir} && .\\${jobId}.exe < ${inputPath}`;
+    const fullCommand = `g++ ${filePath} -o ${exePath} && cd ${jobOutputDir} && ./${jobId}.out < ${inputPath}`;
     console.log(fullCommand);
 
     exec(fullCommand, (error, stdout, stderr) => {

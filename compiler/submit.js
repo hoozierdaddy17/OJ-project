@@ -32,6 +32,10 @@ router.post("/submit", async (req, res) => {
       filePath = path.join(tempDir, "submission.cpp");
       executeFunction = executeCpp;
       break;
+    case "c":
+      filePath = path.join(tempDir, "submission.cpp");
+      executeFunction = executeCpp;
+      break;
     case "python":
       filePath = path.join(tempDir, "submission.py");
       executeFunction = executePython;

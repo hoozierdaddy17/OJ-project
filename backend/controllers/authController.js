@@ -1,6 +1,3 @@
-// PERFORM:
-// user registration, user login, token generation, token refresh, & logout functionalities
-
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
@@ -11,30 +8,16 @@ const authController = {
   signup: async (req, res) => {
     try {
       // Validate inputs
-      const { firstname, lastname, username, email, password, isAdmin } =
-        req.body;
+      const { firstname, lastname, username, email, password, isAdmin } = req.body;
 
       // Validate email format using regex
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        return res
-          .status(400)
-          .json({ success: false, msg: "Invalid email format" });
+        return res.status(400).json({ success: false, msg: "Invalid email format" });
       }
 
-      if (
-        !(
-          firstname &&
-          lastname &&
-          username &&
-          email &&
-          password &&
-          isAdmin !== undefined
-        )
-      ) {
-        return res
-          .status(400)
-          .json({ success: false, msg: "All fields are required" });
+      if (!(firstname && lastname && username && email && password && isAdmin !== undefined)) {
+        return res.status(400).json({ success: false, msg: "All fields are required" });
       }
 
       // Check if user already exists
@@ -43,13 +26,9 @@ const authController = {
       });
       if (existingUser) {
         if (existingUser.email === email) {
-          return res
-            .status(400)
-            .json({ success: false, msg: "Email is already registered" });
+          return res.status(400).json({ success: false, msg: "Email is already registered" });
         } else if (existingUser.username === username) {
-          return res
-            .status(400)
-            .json({ success: false, msg: "Username is already taken" });
+          return res.status(400).json({ success: false, msg: "Username is already taken" });
         }
       }
 
@@ -66,17 +45,15 @@ const authController = {
         isAdmin,
       });
 
-      // Generate JWT token and save in cookies
+      // Generate JWT token
       const token = jwt.sign(
-        { id: newUser._id, email: newUser.email, isAdmin: true },
+        { id: newUser._id, email: newUser.email, isAdmin: newUser.isAdmin },
         process.env.SECRET_KEY,
-        {
-          expiresIn: "24h",
-        }
+        { expiresIn: "24h" }
       );
-      // Tokens are stored on client side in cookies or local storage
-      newUser.token = token;
-      newUser.password = undefined;
+
+      // Set the JWT token in a cookie
+      res.cookie('jwtToken', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
       res.status(201).json({ message: "User created successfully!", newUser });
     } catch (error) {
@@ -92,45 +69,37 @@ const authController = {
 
       // Validate inputs
       if (!email || !password) {
-        return res
-          .status(400)
-          .json({ success: false, msg: "Email and password are required" });
+        return res.status(400).json({ success: false, msg: "Email and password are required" });
       }
 
       // Validate email format using regex
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        return res
-          .status(400)
-          .json({ success: false, msg: "Invalid email format" });
+        return res.status(400).json({ success: false, msg: "Invalid email format" });
       }
 
       // Check if user exists in DB
       const user = await User.findOne({ email });
       if (!user) {
-        return res
-          .status(400)
-          .json({ success: false, msg: "Incorrect email or password" });
+        return res.status(400).json({ success: false, msg: "Incorrect email or password" });
       }
 
       // Check if password matches
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res
-          .status(400)
-          .json({ success: false, msg: "Incorrect email or password" });
+        return res.status(400).json({ success: false, msg: "Incorrect email or password" });
       }
 
-      // Generate JWT token and send in response
+      // Generate JWT token
       const token = jwt.sign(
-        { id: user._id, email: user.email },
+        { id: user._id, email: user.email, isAdmin: user.isAdmin },
         process.env.SECRET_KEY,
-        {
-          expiresIn: "24h",
-        }
+        { expiresIn: "24h" }
       );
 
-      // Including user information in the response
+      // Set the JWT token in a cookie
+      res.cookie('jwtToken', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+
       res.status(200).json({
         token,
         userid: user._id,
@@ -148,7 +117,7 @@ const authController = {
   // logout route handler
   logout: async (req, res) => {
     try {
-      res.clearCookie("token");
+      res.clearCookie("jwtToken"); // Clear the JWT token cookie
       res.status(200).json({ msg: "Logged out successfully" });
     } catch (error) {
       console.error("Error logging out:", error);

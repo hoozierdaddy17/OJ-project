@@ -1,11 +1,15 @@
 # Use a base image with Node.js
 FROM node:18-alpine
+#alpine is a linux flavor (light weight version)
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /compiler
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Copy backend <localhost> <container(workdir)>
+COPY . .
 
 # Install necessary packages
 RUN apk update && \
@@ -20,14 +24,8 @@ RUN apk update && \
 # Install app dependencies
 RUN npm install
 
-# Copy whole backend
-COPY . .
-
-# Rebuild native modules (e.g., bcrypt) to match the container's architecture
-RUN npm rebuild bcrypt --build-from-source
-
-# Expose the port 7000
-EXPOSE 7000
+# Expose the port 7500
+EXPOSE 7500
 
 # Command to run the app
-CMD ["npm", "run", "dev"]
+CMD ["node", "server.js"]

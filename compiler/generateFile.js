@@ -5,13 +5,17 @@ const { v4: uuid } = require("uuid");
 const generateFile = async (language, code) => {
   const dirCodes = path.join(__dirname, "codes");
 
-  if (!fs.existsSync(dirCodes)) fs.mkdirSync(dirCodes, { recursive: true });
+  if (!fs.existsSync(dirCodes)) {
+    fs.mkdirSync(dirCodes, { recursive: true });
+  }
 
   let fileName;
 
   // Determine file name and extension based on language
   if (language === "cpp") {
     fileName = `${uuid()}.cpp`;
+  } else if (language === "c") {
+    fileName = `${uuid()}.c`;
   } else if (language === "java") {
     fileName = "Main.java"; // Fixed name for Java files
   } else if (language === "python") {
@@ -22,17 +26,24 @@ const generateFile = async (language, code) => {
 
   // Determine directory and file path based on language
   let filePath;
-  if (language === "cpp") {
+  if (language === "cpp" || language === 'c') {
     const dirCPP = path.join(dirCodes, "cpp");
-    if (!fs.existsSync(dirCPP)) fs.mkdirSync(dirCPP, { recursive: true });
+    if (!fs.existsSync(dirCPP)) {
+      fs.mkdirSync(dirCPP, { recursive: true });
+    }
     filePath = path.join(dirCPP, fileName);
-  } else if (language === "java") {
+  } 
+  else if (language === "java") {
     const dirJava = path.join(dirCodes, "java");
-    if (!fs.existsSync(dirJava)) fs.mkdirSync(dirJava, { recursive: true });
+    if (!fs.existsSync(dirJava)) {
+      fs.mkdirSync(dirJava, { recursive: true });
+    }
     filePath = path.join(dirJava, fileName);
   } else if (language === "python") {
     const dirPython = path.join(dirCodes, "python");
-    if (!fs.existsSync(dirPython)) fs.mkdirSync(dirPython, { recursive: true });
+    if (!fs.existsSync(dirPython)) {
+      fs.mkdirSync(dirPython, { recursive: true });
+    }
     filePath = path.join(dirPython, fileName);
   }
 

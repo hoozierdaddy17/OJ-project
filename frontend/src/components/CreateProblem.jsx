@@ -1,5 +1,3 @@
-// CreateProblem.jsx
-
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
@@ -137,6 +135,7 @@ const CreateProblem = ({ problem, onCancel }) => {
             value={formData.description}
             onChange={handleChange}
             className="w-full p-2 border rounded"
+            rows="4"
             required
           />
         </div>
@@ -160,9 +159,8 @@ const CreateProblem = ({ problem, onCancel }) => {
         <div className="mb-4">
           <h3 className="text-lg font-bold mb-2">Sample Test Cases</h3>
           {formData.sampleTestCases.map((testCase, index) => (
-            <div key={index} className="flex mb-2">
-              <input
-                type="text"
+            <div key={index} className="flex mb-2 space-x-2">
+              <textarea
                 value={testCase.input}
                 onChange={(e) =>
                   handleTestCaseChange(
@@ -172,11 +170,11 @@ const CreateProblem = ({ problem, onCancel }) => {
                     e.target.value
                   )
                 }
-                className="w-full p-2 border rounded mr-2"
+                className="flex-1 p-2 border rounded"
                 placeholder="Input"
+                rows="2"
               />
-              <input
-                type="text"
+              <textarea
                 value={testCase.output}
                 onChange={(e) =>
                   handleTestCaseChange(
@@ -186,8 +184,9 @@ const CreateProblem = ({ problem, onCancel }) => {
                     e.target.value
                   )
                 }
-                className="w-full p-2 border rounded mr-2"
+                className="flex-1 p-2 border rounded"
                 placeholder="Output"
+                rows="2"
               />
               <button
                 type="button"
@@ -209,9 +208,8 @@ const CreateProblem = ({ problem, onCancel }) => {
         <div className="mb-4">
           <h3 className="text-lg font-bold mb-2">Hidden Test Cases</h3>
           {formData.hiddenTestCases.map((testCase, index) => (
-            <div key={index} className="flex mb-2">
-              <input
-                type="text"
+            <div key={index} className="flex mb-2 space-x-2">
+              <textarea
                 value={testCase.input}
                 onChange={(e) =>
                   handleTestCaseChange(
@@ -221,11 +219,11 @@ const CreateProblem = ({ problem, onCancel }) => {
                     e.target.value
                   )
                 }
-                className="w-full p-2 border rounded mr-2"
+                className="flex-1 p-2 border rounded"
                 placeholder="Input"
+                rows="2"
               />
-              <input
-                type="text"
+              <textarea
                 value={testCase.output}
                 onChange={(e) =>
                   handleTestCaseChange(
@@ -235,8 +233,9 @@ const CreateProblem = ({ problem, onCancel }) => {
                     e.target.value
                   )
                 }
-                className="w-full p-2 border rounded mr-2"
+                className="flex-1 p-2 border rounded"
                 placeholder="Output"
+                rows="2"
               />
               <button
                 type="button"

@@ -20,11 +20,12 @@ const ProblemDetail = ({ user }) => {
   const [language, setLanguage] = useState("cpp");
 
   // Default code snippets for different languages
-  const defaultCodeSnippets = {
-    cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}',
-    python: 'print("Hello, World!")',
-    java: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
-  };
+ const defaultCodeSnippets = {
+   cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n  cout << "Hello, World!" << endl;\n  return 0;\n}',
+   c: '#include <stdio.h>\n\nint main() {\n  printf("Hello, World!");\n  return 0;\n}',
+   python: 'print("Hello, World!")',
+   java: 'public class Main {\n  public static void main(String[] args) {\n    System.out.println("Hello, World!");\n  }\n}',
+ };
 
   useEffect(() => {
     setCode(defaultCodeSnippets[language] || "");
@@ -153,6 +154,7 @@ const ProblemDetail = ({ user }) => {
               className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-500"
             >
               <option value="cpp">C++</option>
+              <option value="c">C</option>
               <option value="python">Python</option>
               <option value="java">Java</option>
               {/* Add more languages as needed */}

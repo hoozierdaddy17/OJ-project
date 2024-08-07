@@ -39,6 +39,9 @@ app.post("/run", async (req, res) => {
       case "cpp":
         output = await executeCpp(filePath, inputPath);
         break;
+      case "c":
+        output = await executeCpp(filePath, inputPath);
+        break;
       case "python":
         output = await executePython(filePath, inputPath);
         break;
