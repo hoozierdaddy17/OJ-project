@@ -1,15 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import ProblemItem from "./ProblemItem";
 import axios from "axios";
 import Filter from "./Filter";
+import { UserContext } from "../App";
 
-const ProblemList = ({ setEditProblem, setActive, isAdmin }) => {
+const ProblemList = ({ setEditProblem, setActive }) => {
+  const { user } = useContext(UserContext); // Access user from context
   const [problems, setProblems] = useState([]);
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [difficulty, setDifficulty] = useState("All");
   const [tags, setTags] = useState([]);
+
   console.log(problems);
+
   const fetchProblems = async () => {
     try {
       const response = await axios.get("http://localhost:7000/problems");
@@ -35,9 +39,11 @@ const ProblemList = ({ setEditProblem, setActive, isAdmin }) => {
         (problem) => problem.difficulty === selectedDifficulty
       );
     }
+
     console.log(problems);
     console.log(filtered);
     console.log(selectedDifficulty);
+
     if (selectedTags.length > 0) {
       filtered = filtered.filter((problem) =>
         selectedTags.every((tag) => problem.problemTags.includes(tag))
@@ -58,7 +64,7 @@ const ProblemList = ({ setEditProblem, setActive, isAdmin }) => {
               problem={problem}
               setEditProblem={setEditProblem}
               setActive={setActive}
-              isAdmin={isAdmin}
+              isAdmin={user?.isAdmin} // Access isAdmin from user context
               fetchProblems={fetchProblems}
             />
           </li>
@@ -71,13 +77,11 @@ const ProblemList = ({ setEditProblem, setActive, isAdmin }) => {
 ProblemList.propTypes = {
   setEditProblem: PropTypes.func,
   setActive: PropTypes.func,
-  isAdmin: PropTypes.bool,
 };
 
 ProblemList.defaultProps = {
   setEditProblem: () => {},
   setActive: () => {},
-  isAdmin: false,
 };
 
 export default ProblemList;

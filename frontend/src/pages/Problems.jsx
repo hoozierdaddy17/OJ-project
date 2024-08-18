@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import ProblemList from "../components/ProblemList";
 import CreateProblem from "../components/CreateProblem";
+import { UserContext } from "../App"; 
 
 const Problems = () => {
   const [editProblem, setEditProblem] = useState(null);
   const [active, setActive] = useState(false);
-  const isAdmin = true; 
+  const { user } = useContext(UserContext); 
 
   return (
     <div className="flex flex-col lg:flex-row flex-1 min-h-screen">
@@ -45,7 +46,7 @@ const Problems = () => {
               setEditProblem(problem);
               setActive(true);
             }}
-            isAdmin={isAdmin}
+            setActive={setActive} 
           />
         )}
       </div>

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import "../App.css";
 
@@ -14,20 +15,38 @@ import Problems from "./pages/Problems";
 import Profile from "./pages/Profile";
 import ProblemDetail from "./components/ProblemDetail";
 
+// Create UserContext
+export const UserContext = createContext();
+
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = Cookies.get("token");
     if (token) {
-      setIsLoggedIn(true);
+      try {
+        const userInfo = JSON.parse(atob(token.split(".")[1]));
+        setUser(userInfo); // Set user state with token data
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+        setUser({});
+      }
     }
   }, []);
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
-    toast.success("Logged in successfully!"); // Show success notification on login
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        const userInfo = JSON.parse(atob(token.split(".")[1]));
+        setUser(userInfo); // Store user info in context
+        toast.success("Logged in successfully!"); 
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+        toast.error("Failed to log in. Please try again.");
+      }
+    }
   };
 
   const handleLogout = async () => {
@@ -37,36 +56,41 @@ function App() {
       });
 
       if (response.ok) {
-        setIsLoggedIn(false);
-        localStorage.removeItem("token");
+        setUser({}); // Reset to empty object on logout
+        Cookies.remove("token"); // Remove the token from cookies
         navigate("/");
-        toast.info("Logged out successfully!"); // Show info notification on logout
+        toast.info("Logged out successfully!"); 
       } else {
         console.error("Failed to log out");
-        toast.error("Failed to log out. Please try again."); // Show error notification
+        toast.error("Failed to log out. Please try again.");
       }
     } catch (error) {
       console.error("Error logging out:", error);
-      toast.error("An error occurred while logging out."); // Show error notification
+      toast.error("An error occurred while logging out.");
     }
   };
 
   return (
-    <div className="App">
-      <ToastContainer />
-      <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-      <div className="pages">
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/problems" element={<Problems />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/problems/:id" element={<ProblemDetail />} />
-        </Routes>
+    <UserContext.Provider value={{ user, setUser }}>
+      <div className="App">
+        <ToastContainer />
+        <Navbar
+          isLoggedIn={Object.keys(user).length > 0}
+          onLogout={handleLogout}
+        />
+        <div className="pages">
+          <Routes>
+            <Route exact path="/" element={<Home />} />
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/problems" element={<Problems />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/problems/:id" element={<ProblemDetail />} />
+          </Routes>
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </UserContext.Provider>
   );
 }
 
