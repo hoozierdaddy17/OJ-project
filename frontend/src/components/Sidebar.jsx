@@ -1,10 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import { useContext } from "react";
-import { UserContext } from "../App"; // Ensure this path is correct
+import { UserContext } from "../App"; 
 
 const Sidebar = () => {
   const location = useLocation();
-  const { user } = useContext(UserContext); // Access the user object from context
+  const { user } = useContext(UserContext); 
 
   // Log the user object to debug
   console.log("Sidebar - User:", user);

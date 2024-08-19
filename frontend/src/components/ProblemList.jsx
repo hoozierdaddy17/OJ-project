@@ -6,13 +6,13 @@ import Filter from "./Filter";
 import { UserContext } from "../App";
 
 const ProblemList = ({ setEditProblem, setActive }) => {
-  const { user } = useContext(UserContext); // Access user from context
+  const { user } = useContext(UserContext);
   const [problems, setProblems] = useState([]);
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [difficulty, setDifficulty] = useState("All");
   const [tags, setTags] = useState([]);
 
-  console.log(problems);
+  // console.log(problems);
 
   const fetchProblems = async () => {
     try {

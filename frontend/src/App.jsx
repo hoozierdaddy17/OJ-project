@@ -14,6 +14,7 @@ import Signup from "./pages/Signup";
 import Problems from "./pages/Problems";
 import Profile from "./pages/Profile";
 import ProblemDetail from "./components/ProblemDetail";
+import ProtectedRoute from "./components/ProtectedRoutes"; 
 
 // Create UserContext
 export const UserContext = createContext();
@@ -41,7 +42,7 @@ function App() {
       try {
         const userInfo = JSON.parse(atob(token.split(".")[1]));
         setUser(userInfo); // Store user info in context
-        toast.success("Logged in successfully!"); 
+        toast.success("Logged in successfully!");
       } catch (error) {
         console.error("Failed to decode token:", error);
         toast.error("Failed to log in. Please try again.");
@@ -59,7 +60,7 @@ function App() {
         setUser({}); // Reset to empty object on logout
         Cookies.remove("token"); // Remove the token from cookies
         navigate("/");
-        toast.info("Logged out successfully!"); 
+        toast.info("Logged out successfully!");
       } else {
         console.error("Failed to log out");
         toast.error("Failed to log out. Please try again.");
@@ -83,8 +84,14 @@ function App() {
             <Route exact path="/" element={<Home />} />
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/problems" element={<Problems />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/problems"
+              element={<ProtectedRoute element={<Problems />} />}
+            />
+            <Route
+              path="/profile"
+              element={<ProtectedRoute element={<Profile />} />}
+            />
             <Route path="/problems/:id" element={<ProblemDetail />} />
           </Routes>
         </div>
