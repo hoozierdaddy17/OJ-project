@@ -5,9 +5,5 @@ node_modules/
 # Ignore generated code files
 /codes/java/*
 /codes/cpp/*
-<<<<<<< HEAD
 /codes/python/*
 keys/
-=======
-/codes/python/*
->>>>>>> origin/temp

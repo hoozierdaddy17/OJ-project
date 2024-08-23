@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { useState, useContext } from "react";
-=======
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
->>>>>>> origin/temp
 import ProblemList from "../components/ProblemList";
 import CreateProblem from "../components/CreateProblem";
 import { UserContext } from "../App";
@@ -11,16 +7,12 @@ import { UserContext } from "../App";
 const Problems = () => {
   const [editProblem, setEditProblem] = useState(null);
   const [active, setActive] = useState(false);
-<<<<<<< HEAD
   const { user } = useContext(UserContext);
-=======
-  const [problems, setProblems] = useState([]); // Replace with your state management for problems
+  const [problems, setProblems] = useState([]);
   const [filteredProblems, setFilteredProblems] = useState([]);
-  const { user } = useContext(UserContext);
   const location = useLocation();
 
   useEffect(() => {
-    // Fetch problems and store them in state
     const fetchProblems = async () => {
       // Replace with your API call to fetch problems
       const response = await fetch("http://localhost:7000/problems");
@@ -32,7 +24,6 @@ const Problems = () => {
   }, []);
 
   useEffect(() => {
-    // Filter problems based on search query from URL
     const query = new URLSearchParams(location.search).get("search") || "";
     if (query.trim()) {
       setFilteredProblems(problems.filter(problem =>
@@ -42,18 +33,13 @@ const Problems = () => {
       setFilteredProblems(problems);
     }
   }, [location.search, problems]);
->>>>>>> origin/temp
 
   return (
     <div className="flex flex-col lg:flex-row flex-1 min-h-screen">
       <div className="lg:w-1/4 p-4 bg-gray-200">
         <h2 className="text-2xl font-bold mb-4">User Panel</h2>
         <ul>
-<<<<<<< HEAD
-          {user?.isAdmin && ( // Check if user is an admin before showing Create Problem button
-=======
-          {user.role === "admin" && (
->>>>>>> origin/temp
+          {user?.role === "admin" && (
             <li className="mb-2">
               <button
                 onClick={() => {
@@ -84,10 +70,7 @@ const Problems = () => {
           />
         ) : (
           <ProblemList
-<<<<<<< HEAD
-=======
             problems={filteredProblems}
->>>>>>> origin/temp
             setEditProblem={(problem) => {
               setEditProblem(problem);
               setActive(true);
@@ -101,9 +84,3 @@ const Problems = () => {
 };
 
 export default Problems;
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> origin/temp
