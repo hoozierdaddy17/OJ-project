@@ -1,0 +1,9 @@
+node_modules/
+.env
+.vscode/
+
+# Ignore generated code files
+/codes/java/*
+/codes/cpp/*
+/codes/python/*
+keys/
