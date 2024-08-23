@@ -51,6 +51,7 @@ const ProblemDetail = ({ user }) => {
   const handleRunCode = async () => {
     setIsRunningCode(true);
     try {
+<<<<<<< HEAD
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}`,
         {
@@ -59,6 +60,13 @@ const ProblemDetail = ({ user }) => {
           input,
         }
       );
+=======
+      const response = await axios.post("http://localhost:7500/run", {
+        language,
+        code,
+        input,
+      });
+>>>>>>> origin/temp
       setOutput(response.data.output);
     } catch (error) {
       setOutput(
