@@ -52,7 +52,7 @@ const ProblemDetail = ({ user }) => {
     setIsRunningCode(true);
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}`,
+        `${import.meta.env.VITE_COMPILER_URL}`,
         {
           language,
           code,

@@ -1,13 +1,12 @@
 const Problem = require("../models/Problem");
 const path = require("path");
 const fs = require("fs");
-const { executeCpp } = require("../../compiler/executeCpp"); 
+const { executeCpp } = require("../compiler/executeCpp");
 
 const problemController = {
   // Get all problems
   getProblems: async (req, res) => {
     try {
-
       const problems = await Problem.find();
       res.status(200).json(problems);
     } catch (error) {
@@ -80,7 +79,7 @@ const problemController = {
     }
   },
 
-   submitProblem: async (req, res) => {
+  submitProblem: async (req, res) => {
     const { language, code } = req.body;
     const { id } = req.params;
 
@@ -112,7 +111,10 @@ const problemController = {
       };
 
       // Make API call to the compiler backend
-      const response = await axios.post('http://localhost:7500/submit', requestData);
+      const response = await axios.post(
+        "http://localhost:7500/submit",
+        requestData
+      );
 
       // Return results from the compiler backend
       res.status(200).json(response.data);
