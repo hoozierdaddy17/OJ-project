@@ -15,7 +15,7 @@ const Problems = () => {
   useEffect(() => {
     const fetchProblems = async () => {
       // Replace with your API call to fetch problems
-      const response = await fetch("http://localhost:7000/problems");
+      const response = await fetch(`${import.meta.env.VITE_RAILWAY_BACKEND_URL}/problems`);
       const data = await response.json();
       setProblems(data);
     };

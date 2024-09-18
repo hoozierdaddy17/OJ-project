@@ -25,7 +25,7 @@ const ProblemItem = ({
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:7000/problems/${problem._id}`);
+      await axios.delete(`${import.meta.env.VITE_RAILWAY_BACKEND_URL}/problems/${problem._id}`);
       fetchProblems();
     } catch (error) {
       console.error("Error deleting problem:", error);

@@ -6,7 +6,7 @@ export const getUserRole = async () => {
   if (!token) return null;
 
   try {
-    const response = await axios.get("http://localhost:7000/profile/me", {
+    const response = await axios.get(`${import.meta.env.VITE_RAILWAY_BACKEND_URL}/profile/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

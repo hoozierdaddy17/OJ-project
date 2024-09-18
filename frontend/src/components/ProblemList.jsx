@@ -16,7 +16,7 @@ const ProblemList = ({ setEditProblem, setActive }) => {
 
   const fetchProblems = async () => {
     try {
-      const response = await axios.get("http://localhost:7000/problems");
+      const response = await axios.get(`${import.meta.env.VITE_RAILWAY_BACKEND_URL}/problems`);
       setProblems(response.data);
       setFilteredProblems(response.data);
     } catch (error) {

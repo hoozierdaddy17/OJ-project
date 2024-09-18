@@ -18,7 +18,7 @@ const Signup = () => {
     const isAdmin = role === "Admin";
 
     try {
-      const response = await axios.post("http://localhost:7000/auth/signup", {
+      const response = await axios.post(`${import.meta.env.VITE_RAILWAY_BACKEND_URL}/auth/signup`, {
         firstname,
         lastname,
         username,

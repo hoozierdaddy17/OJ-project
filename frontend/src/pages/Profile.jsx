@@ -28,9 +28,12 @@ const ProfilePage = () => {
     const fetchUserData = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get("http://localhost:7000/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_RAILWAY_BACKEND_URL}/profile`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setUserData(response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -54,12 +57,9 @@ const ProfilePage = () => {
       if (activeTab === "submissions") {
         try {
           const token = Cookies.get("token");
-          const response = await axios.get(
-            "http://localhost:7000/submissions",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+          const response = await axios.get("RAILWAY_BACKEND_URL/submissions", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
           console.log("Fetched submissions:", response.data);
           setSubmissions(response.data.reverse());
         } catch (error) {
@@ -78,7 +78,7 @@ const ProfilePage = () => {
     try {
       const token = Cookies.get("token");
       const response = await axios.put(
-        "http://localhost:7000/profile",
+        `${import.meta.env.VITE_RAILWAY_BACKEND_URL}/profile`,
         {
           username: updatedFields.username || userData.username,
           email: updatedFields.email || userData.email,

@@ -68,12 +68,12 @@ const CreateProblem = ({ problem, onCancel }) => {
     try {
       if (problem) {
         await axios.put(
-          `http://localhost:7000/problems/${problem._id}`,
+          `${import.meta.env.VITE_RAILWAY_BACKEND_URL}/problems/${problem._id}`,
           payload
         );
         console.log("Problem updated successfully");
       } else {
-        await axios.post("http://localhost:7000/problems/create", payload);
+        await axios.post(`${import.meta.env.VITE_RAILWAY_BACKEND_URL}/problems/create`, payload);
         console.log("Problem created successfully");
       }
       onCancel();

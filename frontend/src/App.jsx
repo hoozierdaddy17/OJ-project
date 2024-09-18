@@ -52,7 +52,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:7000/auth/logout", {
+      const response = await fetch(`${import.meta.env.VITE_RAILWAY_BACKEND_URL}/auth/logout`, {
         method: "POST",
       });
 

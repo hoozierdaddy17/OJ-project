@@ -14,10 +14,13 @@ const Login = ({ onLogin }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:7000/auth/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_RAILWAY_BACKEND_URL}/auth/login`,
+        {
+          email,
+          password,
+        }
+      );
 
       const userRole = response.data.isAdmin ? "Admin" : "Normal";
       console.log("User role after login:", userRole);

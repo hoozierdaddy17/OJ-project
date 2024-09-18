@@ -34,9 +34,7 @@ const ProblemDetail = ({ user }) => {
   useEffect(() => {
     const fetchProblem = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:7000/problems/${id}`
-        );
+        const response = await axios.get(`RAILWAY_BACKEND_URL/problems/${id}`);
         setProblem(response.data);
       } catch (error) {
         setError("Problem not found");
@@ -80,7 +78,7 @@ const ProblemDetail = ({ user }) => {
       const token = Cookies.get("token");
 
       const response = await axios.post(
-        "http://localhost:7000/submissions",
+        `${import.meta.env.VITE_RAILWAY_BACKEND_URL}/submissions`,
         {
           problemId,
           language,

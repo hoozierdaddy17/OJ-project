@@ -8,8 +8,14 @@ const { executeJava } = require("./executeJava");
 const cors = require("cors");
 const submitProblem = require("./submit");
 
+var corsOptions = {
+  origin: "http://example.com",
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+
 //middlewares
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
