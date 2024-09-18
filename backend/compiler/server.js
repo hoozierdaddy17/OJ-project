@@ -9,7 +9,7 @@ const cors = require("cors");
 const submitProblem = require("./submit");
 
 var corsOptions = {
-  origin: "http://example.com",
+  origin: process.env.FRONTEND_URL,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
